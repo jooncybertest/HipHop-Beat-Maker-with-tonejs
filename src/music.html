@@ -40,11 +40,20 @@
       h1 {
         margin-bottom: 20px;
       }
+      .beat-circle {
+        width: 100px;
+        height: 100px;
+        background-color: #4caf50;
+        border-radius: 50%;
+        margin: 20px auto;
+        transition: width 0.1s ease, height 0.1s ease;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>Hip-Hop Beat Maker</h1>
+      <div class="beat-circle" id="beat-circle"></div>
       <button onclick="startBeat()">Start Beat</button>
       <button onclick="stopBeat()">Stop Beat</button>
     </div>

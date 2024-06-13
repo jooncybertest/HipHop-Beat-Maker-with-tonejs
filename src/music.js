@@ -86,6 +86,7 @@ const drumPattern = new Tone.Sequence(
     switch (note) {
       case "kick":
         kick.triggerAttackRelease("C2", "8n", time);
+        animateBeat();
         break;
       case "snare":
         snare.triggerAttackRelease("8n", time);
@@ -155,6 +156,17 @@ const melodyLine = new Tone.Sequence(
 
 // Transport settings
 Tone.Transport.bpm.value = 78; // Nonstop is around 78 BPM
+
+// Function to animate the beat circle
+function animateBeat() {
+  const beatCircle = document.getElementById("beat-circle");
+  beatCircle.style.width = "120px";
+  beatCircle.style.height = "120px";
+  setTimeout(() => {
+    beatCircle.style.width = "100px";
+    beatCircle.style.height = "100px";
+  }, 100);
+}
 
 // Functions to start and stop the beat
 function startBeat() {
