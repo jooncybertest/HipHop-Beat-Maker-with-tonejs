@@ -49,7 +49,7 @@ const hihat = new Tone.MetalSynth({
 // Create a bass synth with a clean sound
 const bass = new Tone.MonoSynth({
   oscillator: {
-    type: "triangle",
+    type: "sine",
   },
   envelope: {
     attack: 0.05,
@@ -64,12 +64,12 @@ const bass = new Tone.MonoSynth({
     baseFrequency: 150,
     octaves: 2.6,
   },
-}).connect(delay);
+}).toDestination();
 
-// Create a melody synth
+// Create a minimal melody synth
 const melody = new Tone.Synth({
   oscillator: {
-    type: "square",
+    type: "triangle",
   },
   envelope: {
     attack: 0.1,
@@ -77,21 +77,25 @@ const melody = new Tone.Synth({
     sustain: 0.3,
     release: 0.5,
   },
-}).connect(reverb);
+}).toDestination();
 
 // Create the drum pattern
-const drumPattern = new Tone.Pattern(
+const drumPattern = new Tone.Sequence(
   (time, note) => {
-    if (note === "kick") {
-      kick.triggerAttackRelease("C2", "8n", time);
-    } else if (note === "snare") {
-      snare.triggerAttackRelease("8n", time);
-    } else if (note === "hihat") {
-      hihat.triggerAttackRelease("16n", time);
+    switch (note) {
+      case "kick":
+        kick.triggerAttackRelease("C2", "8n", time);
+        break;
+      case "snare":
+        snare.triggerAttackRelease("8n", time);
+        break;
+      case "hihat":
+        hihat.triggerAttackRelease("16n", time);
+        break;
     }
   },
   ["kick", "hihat", "kick", "hihat", "snare", "hihat", "kick", "hihat"],
-  "upDown"
+  "up"
 );
 
 // Create the bassline
@@ -99,21 +103,21 @@ const bassline = new Tone.Sequence(
   (time, note) => {
     bass.triggerAttackRelease(note, "8n", time);
   },
-  ["C2", "D2", "E2", "G2", "A2", "G2", "E2", "D2"],
-  "8n"
+  ["C2", "C2", "G2", "G2", "A2", "A2", "F2", "F2"],
+  "4n"
 );
 
-// Create the melody
+// Create the melody (minimal and atmospheric)
 const melodyLine = new Tone.Sequence(
   (time, note) => {
     melody.triggerAttackRelease(note, "4n", time);
   },
-  ["C4", "E4", "G4", "B4", "C5", "B4", "G4", "E4"],
-  "16n"
+  ["G4", "A4", "G4", "A4"],
+  "8n"
 );
 
 // Transport settings
-Tone.Transport.bpm.value = 140; // A faster tempo for a trap-style beat
+Tone.Transport.bpm.value = 78; // Nonstop is around 78 BPM
 
 // Functions to start and stop the beat
 function startBeat() {
