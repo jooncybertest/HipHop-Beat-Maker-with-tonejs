@@ -24,7 +24,7 @@ const kick = new Tone.MembraneSynth({
 
 const snare = new Tone.NoiseSynth({
   noise: {
-    type: "white",
+    type: "brown", // Change to "white" or "brown" as desired
   },
   envelope: {
     attack: 0.005,
@@ -66,7 +66,18 @@ const bass = new Tone.MonoSynth({
   },
 }).toDestination();
 
-
+// Create a minimal melody synth
+const melody = new Tone.Synth({
+  oscillator: {
+    type: "sawtooth",
+  },
+  envelope: {
+    attack: 0.05,
+    decay: 0.1,
+    sustain: 0.5,
+    release: 0.3,
+  },
+}).toDestination();
 
 // Create the drum pattern
 const drumPattern = new Tone.Sequence(
@@ -92,7 +103,7 @@ const bassline = new Tone.Sequence(
   (time, note) => {
     bass.triggerAttackRelease(note, "8n", time);
   },
-  ["C2", "C2", "G2", "G2", "A2", "A2", "F2", "F2"],
+  ["C2", "D2", "E2", "G2", "A2", "G2", "E2", "D2"],
   "4n"
 );
 
