@@ -24,7 +24,7 @@ const kick = new Tone.MembraneSynth({
 
 const snare = new Tone.NoiseSynth({
   noise: {
-    type: "brown", // Change to "white" or "brown" as desired
+    type: "white",
   },
   envelope: {
     attack: 0.005,
@@ -33,23 +33,22 @@ const snare = new Tone.NoiseSynth({
   },
 }).connect(reverb);
 
-const hihat = new Tone.MetalSynth({
-  frequency: 250,
+const hihat = new Tone.NoiseSynth({
+  noise: {
+    type: "white",
+  },
   envelope: {
     attack: 0.001,
-    decay: 0.1,
-    release: 0.01,
+    decay: 0.05,
+    sustain: 0,
+    release: 0.05,
   },
-  harmonicity: 5.1,
-  modulationIndex: 32,
-  resonance: 4000,
-  octaves: 1.5,
 }).toDestination();
 
 // Create a bass synth with a clean sound
 const bass = new Tone.MonoSynth({
   oscillator: {
-    type: "sine",
+    type: "triangle",
   },
   envelope: {
     attack: 0.05,
@@ -66,10 +65,12 @@ const bass = new Tone.MonoSynth({
   },
 }).toDestination();
 
-// Create a minimal melody synth
+// Create a melody synth with a richer sound
 const melody = new Tone.Synth({
   oscillator: {
-    type: "sawtooth",
+    type: "fatsawtooth",
+    count: 3,
+    spread: 20,
   },
   envelope: {
     attack: 0.05,
@@ -89,31 +90,67 @@ const drumPattern = new Tone.Sequence(
       case "snare":
         snare.triggerAttackRelease("8n", time);
         break;
-      case "hihat":
-        hihat.triggerAttackRelease("16n", time);
-        break;
     }
   },
-  ["kick", "hihat", "kick", "hihat", "snare", "hihat", "kick", "hihat"],
-  "up"
+  ["kick", null, "kick", null, "snare", null, "kick", null],
+  "8n"
 );
 
-// Create the bassline
+// Create the hi-hat pattern
+const hihatPattern = new Tone.Loop((time) => {
+  hihat.triggerAttackRelease("16n", time);
+}, "16n");
+
+// Create the bassline with more variation
 const bassline = new Tone.Sequence(
   (time, note) => {
     bass.triggerAttackRelease(note, "8n", time);
   },
-  ["C2", "D2", "E2", "G2", "A2", "G2", "E2", "D2"],
-  "4n"
+  [
+    "C2",
+    null,
+    "D2",
+    null,
+    "E2",
+    null,
+    "G2",
+    null,
+    "A2",
+    null,
+    "G2",
+    null,
+    "E2",
+    null,
+    "D2",
+    null,
+  ],
+  "8n"
 );
 
-// Create the melody (minimal and atmospheric)
+// Create a more dynamic and engaging melody
 const melodyLine = new Tone.Sequence(
   (time, note) => {
-    melody.triggerAttackRelease(note, "4n", time);
+    melody.triggerAttackRelease(note, "8n", time);
   },
-  ["G4", "A4", "G4", "A4"],
-  "8n"
+  [
+    "C4",
+    "E4",
+    "G4",
+    "B4",
+    "C5",
+    "B4",
+    "G4",
+    "E4",
+    "C4",
+    "D4",
+    "F4",
+    "A4",
+    "C5",
+    "A4",
+    "F4",
+    "D4",
+  ],
+  "16n"
 );
 
 // Transport settings
@@ -123,6 +160,7 @@ Tone.Transport.bpm.value = 78; // Nonstop is around 78 BPM
 function startBeat() {
   Tone.start();
   drumPattern.start(0);
+  hihatPattern.start(0);
   bassline.start(0);
   melodyLine.start(0);
   Tone.Transport.start();
@@ -130,6 +168,7 @@ function startBeat() {
 
 function stopBeat() {
   drumPattern.stop();
+  hihatPattern.stop();
   bassline.stop();
   melodyLine.stop();
   Tone.Transport.stop();
