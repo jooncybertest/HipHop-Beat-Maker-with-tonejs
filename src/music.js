@@ -1,10 +1,12 @@
-// Create a reverb effect
+// Create reverb and delay effects
 const reverb = new Tone.Reverb({
-  decay: 3,
+  decay: 2,
   preDelay: 0.01,
 }).toDestination();
 
-// Create a new drum kit with added effects
+const delay = new Tone.FeedbackDelay("8n", 0.5).toDestination();
+
+// Create a new drum kit
 const kick = new Tone.MembraneSynth({
   pitchDecay: 0.05,
   octaves: 10,
@@ -44,30 +46,30 @@ const hihat = new Tone.MetalSynth({
   octaves: 1.5,
 }).toDestination();
 
-// Create a bass synth with a sine wave oscillator for a cleaner sound
+// Create a bass synth with a clean sound
 const bass = new Tone.MonoSynth({
   oscillator: {
-    type: "sine",
+    type: "triangle",
   },
   envelope: {
-    attack: 0.01,
-    decay: 0.3,
-    sustain: 0.8,
-    release: 0.5,
+    attack: 0.05,
+    decay: 0.2,
+    sustain: 0.5,
+    release: 0.8,
   },
   filterEnvelope: {
     attack: 0.001,
-    decay: 0.7,
-    sustain: 0.1,
-    baseFrequency: 200,
+    decay: 0.3,
+    sustain: 0.2,
+    baseFrequency: 150,
     octaves: 2.6,
   },
-}).toDestination();
+}).connect(delay);
 
-// Create a minimal melody synth
+// Create a melody synth
 const melody = new Tone.Synth({
   oscillator: {
-    type: "triangle",
+    type: "square",
   },
   envelope: {
     attack: 0.1,
@@ -75,7 +77,7 @@ const melody = new Tone.Synth({
     sustain: 0.3,
     release: 0.5,
   },
-}).toDestination();
+}).connect(reverb);
 
 // Create the drum pattern
 const drumPattern = new Tone.Pattern(
@@ -88,7 +90,7 @@ const drumPattern = new Tone.Pattern(
       hihat.triggerAttackRelease("16n", time);
     }
   },
-  ["kick", "hihat", "kick", "hihat", "kick", "snare", "kick", "hihat"],
+  ["kick", "hihat", "kick", "hihat", "snare", "hihat", "kick", "hihat"],
   "upDown"
 );
 
@@ -97,21 +99,21 @@ const bassline = new Tone.Sequence(
   (time, note) => {
     bass.triggerAttackRelease(note, "8n", time);
   },
-  ["C2", "C2", "G2", "G2", "A2", "A2", "F2", "F2"],
+  ["C2", "D2", "E2", "G2", "A2", "G2", "E2", "D2"],
   "8n"
 );
 
-// Create the melody (minimal and atmospheric)
+// Create the melody
 const melodyLine = new Tone.Sequence(
   (time, note) => {
     melody.triggerAttackRelease(note, "4n", time);
   },
-  ["G4", "A4", "G4", "A4"],
-  "8n"
+  ["C4", "E4", "G4", "B4", "C5", "B4", "G4", "E4"],
+  "16n"
 );
 
 // Transport settings
-Tone.Transport.bpm.value = 78; // Nonstop is around 78 BPM
+Tone.Transport.bpm.value = 140; // A faster tempo for a trap-style beat
 
 // Functions to start and stop the beat
 function startBeat() {
