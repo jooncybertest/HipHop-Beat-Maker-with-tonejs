@@ -1,17 +1,38 @@
-// Create a new drum kit
-const kick = new Tone.MembraneSynth().toDestination();
+// Create a reverb effect
+const reverb = new Tone.Reverb({
+  decay: 3,
+  preDelay: 0.01,
+}).toDestination();
+
+// Create a new drum kit with added effects
+const kick = new Tone.MembraneSynth({
+  pitchDecay: 0.05,
+  octaves: 10,
+  oscillator: {
+    type: "sine",
+  },
+  envelope: {
+    attack: 0.001,
+    decay: 0.4,
+    sustain: 0.01,
+    release: 1.4,
+    attackCurve: "exponential",
+  },
+}).connect(reverb);
+
 const snare = new Tone.NoiseSynth({
   noise: {
     type: "white",
   },
   envelope: {
     attack: 0.005,
-    decay: 0.1,
+    decay: 0.2,
     sustain: 0,
   },
-}).toDestination();
+}).connect(reverb);
+
 const hihat = new Tone.MetalSynth({
-  frequency: 200,
+  frequency: 250,
   envelope: {
     attack: 0.001,
     decay: 0.1,
@@ -23,23 +44,30 @@ const hihat = new Tone.MetalSynth({
   octaves: 1.5,
 }).toDestination();
 
-// Create a bass synth
-const bass = new Tone.Synth({
+// Create a bass synth with a sine wave oscillator for a cleaner sound
+const bass = new Tone.MonoSynth({
   oscillator: {
-    type: "square",
+    type: "sine",
   },
   envelope: {
-    attack: 0.1,
+    attack: 0.01,
     decay: 0.3,
-    sustain: 0.4,
-    release: 0.8,
+    sustain: 0.8,
+    release: 0.5,
+  },
+  filterEnvelope: {
+    attack: 0.001,
+    decay: 0.7,
+    sustain: 0.1,
+    baseFrequency: 200,
+    octaves: 2.6,
   },
 }).toDestination();
 
-// Create a melody synth
+// Create a minimal melody synth
 const melody = new Tone.Synth({
   oscillator: {
-    type: "sawtooth",
+    type: "triangle",
   },
   envelope: {
     attack: 0.1,
@@ -60,30 +88,30 @@ const drumPattern = new Tone.Pattern(
       hihat.triggerAttackRelease("16n", time);
     }
   },
-  ["kick", "hihat", "snare", "hihat", "kick", "hihat", "snare", "hihat"],
+  ["kick", "hihat", "kick", "hihat", "kick", "snare", "kick", "hihat"],
   "upDown"
 );
 
 // Create the bassline
 const bassline = new Tone.Sequence(
   (time, note) => {
-    bass.triggerAttackRelease(note, "16n", time);
+    bass.triggerAttackRelease(note, "8n", time);
   },
-  ["C2", "E2", "G2", "B2", "C3", "E3", "G3", "B3"],
+  ["C2", "C2", "G2", "G2", "A2", "A2", "F2", "F2"],
   "8n"
 );
 
-// Create the melody
+// Create the melody (minimal and atmospheric)
 const melodyLine = new Tone.Sequence(
   (time, note) => {
-    melody.triggerAttackRelease(note, "8n", time);
+    melody.triggerAttackRelease(note, "4n", time);
   },
-  ["C4", "D4", "E4", "G4", "A4", "G4", "E4", "D4"],
-  "4n"
+  ["G4", "A4", "G4", "A4"],
+  "8n"
 );
 
 // Transport settings
-Tone.Transport.bpm.value = 90;
+Tone.Transport.bpm.value = 78; // Nonstop is around 78 BPM
 
 // Functions to start and stop the beat
 function startBeat() {
