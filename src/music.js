@@ -66,18 +66,7 @@ const bass = new Tone.MonoSynth({
   },
 }).toDestination();
 
-// Create a minimal melody synth
-const melody = new Tone.Synth({
-  oscillator: {
-    type: "triangle",
-  },
-  envelope: {
-    attack: 0.1,
-    decay: 0.2,
-    sustain: 0.3,
-    release: 0.5,
-  },
-}).toDestination();
+
 
 // Create the drum pattern
 const drumPattern = new Tone.Sequence(
